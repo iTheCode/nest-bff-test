@@ -1,0 +1,42 @@
+version: '3'
+services:
+  bff:
+    build: .
+    ports:
+      - '3000:3000'
+    networks:
+      - bff-network
+    environment:
+      - PORT=3000
+      - CORS_ORIGIN=*
+      - MONGODB_URI=mongodb://mongodb:27017/bff
+      - FAST_API_URL_1=http://192.168.48.5:8000
+      - FAST_API_URL_2=http://192.168.48.7:8000
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    networks:
+      - bff-network
+    volumes:
+      - mongodb_data:/data/db
+
+  redis:
+    image: redis:latest
+    networks:
+      - bff-network
+    ports:
+      - '6379:6379'
+
+volumes:
+  mongodb_data:
+
+networks:
+  bff-network:
+    external: true
